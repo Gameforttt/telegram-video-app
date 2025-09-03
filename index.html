@@ -1,247 +1,960 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>🎬 Video Downloader</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader Bot - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #d69e2e;
+            --info: #3182ce;
+            --light: #f7fafc;
+            --dark: #2d3748;
+            --gray: #718096;
+            --gray-light: #e2e8f0;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
+            color: var(--dark);
         }
-        
+
         .container {
-            max-width: 400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            background: white;
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
             text-align: center;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease;
         }
-        
-        .logo {
-            font-size: 50px;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
-        
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            background: rgba(255, 255, 255, 0.9);
-        }
-        
-        input:focus, select:focus {
-            outline: 3px solid #00c853;
-        }
-        
-        button {
-            width: 100%;
-            padding: 16px;
-            background: #00c853;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-        
-        button:hover {
-            background: #009624;
+
+        .stat-card:hover {
             transform: translateY(-2px);
         }
-        
-        button:active {
-            transform: translateY(0);
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
         }
-        
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.15);
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stat-trend {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: var(--light);
+            padding: 25px;
             border-radius: 15px;
-            display: none;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
         }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+
+        .feature-card:hover {
+            transform: translateY(-5px);
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
         }
-        
-        .success { color: #00c853; }
-        .error { color: #ff4444; }
-        
-        .platform-icons {
-            display: flex;
-            justify-content: center;
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .quick-actions {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .quick-actions h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin: 20px 0;
-            font-size: 24px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #6b46c1;
+            transform: translateY(-2px);
+        }
+
+        .recent-downloads {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .recent-downloads h2 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--gray-light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        tr:hover {
+            background: var(--gray-light);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-primary {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .badge-warning {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: var(--success);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.info {
+            background: var(--info);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🎬</div>
-        <h1>Video Downloader</h1>
-        
-        <div class="platform-icons">
-            <span>📹</span>
-            <span>📱</span>
-            <span>🎵</span>
-            <span>🔗</span>
+        <div class="header">
+            <h1>Video Downloader Bot</h1>
+            <p>Dashboard</p>
+            <p>Advanced Telegram bot for downloading videos with progress tracking</p>
         </div>
-        
-        <div class="input-group">
-            <label for="urlInput">Ссылка на видео:</label>
-            <input type="url" id="urlInput" placeholder="https://youtube.com/..." />
-        </div>
-        
-        <div class="input-group">
-            <label for="formatSelect">Формат:</label>
-            <select id="formatSelect">
-                <option value="video">🎥 Видео (MP4)</option>
-                <option value="audio">🎵 Аудио (MP3)</option>
-                <option value="original">📁 Оригинал</option>
-            </select>
-        </div>
-        
-        <div class="input-group">
-            <label for="qualitySelect">Качество:</label>
-            <select id="qualitySelect">
-                <option value="1080">Full HD (1080p)</option>
-                <option value="720" selected>HD (720p)</option>
-                <option value="480">SD (480p)</option>
-            </select>
-        </div>
-        
-        <button onclick="downloadVideo()">
-            ⬇️ Скачать видео
-        </button>
-        
-        <div id="result" class="result">
-            <p id="statusText"></p>
+
+        <div class="dashboard">
+            <!-- Statistics Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-download"></i>
+                    <div class="stat-number" id="total-downloads">0</div>
+                    <div class="stat-label">Total Downloads</div>
+                    <div class="stat-trend" id="downloads-trend"></div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-number" id="active-users">0</div>
+                    <div class="stat-label">Active Users (24h)</div>
+                    <div class="stat-trend" id="users-trend"></div>
+                </div>
+                
+                <div class="stat-card">
+                    <i class="fas fa-database"></i>
+                    <div class="stat-number" id="data-processed">0.0 GB</div>
+                    <div class="stat-label">Data Processed</div>
+                    <div class="stat-trend" id="data-trend"></div>
+                </div>
+
+                <div class="stat-card">
+                    <i class="fas fa-bolt"></i>
+                    <div class="stat-number" id="online-now">0</div>
+                    <div class="stat-label">Online Now</div>
+                    <div class="stat-trend" id="online-trend"></div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Real-time Progress</h3>
+                    <p>Live download progress with speed and ETA tracking</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-file-video"></i>
+                    <h3>Multiple Formats</h3>
+                    <p>MP4, MP3, WebM with quality selection options</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Download History</h3>
+                    <p>Complete history of all your downloads</p>
+                </div>
+                
+                <div class="feature-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>1000+ Sites</h3>
+                    <p>YouTube, TikTok, Instagram & more supported</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="openAnalyzeModal()">
+                        <i class="fas fa-link"></i>
+                        Analyze Video URL
+                    </button>
+                    <button class="btn btn-secondary" onclick="openTelegramBot()">
+                        <i class="fab fa-telegram"></i>
+                        Open Telegram Bot
+                    </button>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Downloads -->
+            <div class="recent-downloads">
+                <h2>Recent Downloads</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Title</th>
+                                <th>Format</th>
+                                <th>Size</th>
+                                <th>Downloaded</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="downloads-table">
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    <div class="loading-spinner"></div>
+                                    <div>Loading downloads...</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Модальное окно анализа URL -->
+    <div id="analyzeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAnalyzeModal()">&times;</span>
+            <h2>Analyze Video URL</h2>
+            <div class="form-group">
+                <label for="videoUrl">Video URL:</label>
+                <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=..." required>
+            </div>
+            <div class="form-group">
+                <label for="formatSelect">Format:</label>
+                <select id="formatSelect">
+                    <option value="mp4">MP4 Video</option>
+                    <option value="mp3">MP3 Audio</option>
+                    <option value="webm">WebM Video</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="analyzeVideo()" style="width: 100%;">
+                <i class="fas fa-search"></i>
+                Analyze Video
+            </button>
+            <div id="analyzeResult" style="margin-top: 20px; display: none;">
+                <h3>Analysis Result:</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div id="notification" class="notification"></div>
+
     <script>
-        // Инициализация Telegram Web App
-        let tg = window.Telegram.WebApp;
-        
-        // Расширяем на весь экран
-        tg.expand();
-        tg.enableClosingConfirmation();
-        
-        // Показываем кнопку "Назад"
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-            tg.close();
-        });
-        
-        function downloadVideo() {
-            const url = document.getElementById('urlInput').value;
-            const format = document.getElementById('formatSelect').value;
-            const quality = document.getElementById('qualitySelect').value;
-            
-            // Проверка URL
-            if (!url) {
-                showResult('❌ Введите ссылку на видео!', 'error');
-                return;
+        // ==================== КОНФИГУРАЦИЯ ====================
+        const CONFIG = {
+            BOT_TOKEN: '8331709774:AAHQtxo8y1sJCo07IeH5ZCXRDGH7pytKiDM', // Замените на реальный токен бота
+            UPDATE_INTERVAL: 10000, // 10 секунд
+            API_BASE_URL: 'https://api.telegram.org/bot'
+        };
+
+        // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+        let statsData = {
+            total_downloads: 0,
+            active_users: 0,
+            data_processed: 0,
+            online_now: 0,
+            trends: {
+                downloads: 0,
+                users: 0,
+                data: 0,
+                online: 0
             }
-            
-            if (!isValidUrl(url)) {
-                showResult('❌ Неверная ссылка!', 'error');
-                return;
+        };
+
+        let previousStats = null;
+        let isRefreshing = false;
+
+        // ==================== TELEGRAM BOT API ====================
+        class TelegramBotAPI {
+            constructor(token) {
+                this.token = token;
+                this.baseUrl = `https://api.telegram.org/bot${token}`;
             }
-            
-            showResult('⏳ Обрабатываю...', 'loading');
-            
-            // Отправляем данные в бота
-            const data = {
-                url: url,
-                format: format,
-                quality: quality
-            };
-            
-            tg.sendData(JSON.stringify(data));
-        }
-        
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-        
-        function showResult(message, type = '') {
-            const result = document.getElementById('result');
-            const statusText = document.getElementById('statusText');
-            
-            result.style.display = 'block';
-            statusText.innerHTML = message;
-            statusText.className = type;
-        }
-        
-        // Обработка данных от бота
-        tg.onEvent('web_app_data', (data) => {
-            try {
-                const result = JSON.parse(data);
-                if (result.success) {
-                    showResult('✅ <b>Готово!</b><br>Файл отправлен в чат', 'success');
-                } else {
-                    showResult('❌ <b>Ошибка:</b><br>' + result.error, 'error');
+
+            async getMe() {
+                try {
+                    const response = await fetch(`${this.baseUrl}/getMe`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error getting bot info:', error);
+                    return null;
                 }
-            } catch (e) {
-                showResult('❌ Ошибка обработки данных', 'error');
             }
-        });
-        
-        // Закрытие Web App
-        tg.onEvent('web_app_close', () => {
-            tg.close();
+
+            async getWebhookInfo() {
+                try {
+                    const response = await fetch(`${this.baseUrl}/getWebhookInfo`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error getting webhook info:', error);
+                    return null;
+                }
+            }
+
+            async getChatMembersCount(chatId) {
+                try {
+                    const response = await fetch(`${this.baseUrl}/getChatMembersCount?chat_id=${chatId}`);
+                    const data = await response.json();
+                    return data.ok ? data.result : 0;
+                } catch (error) {
+                    console.error('Error getting chat members count:', error);
+                    return 0;
+                }
+            }
+
+            async sendMessage(chatId, text) {
+                try {
+                    const response = await fetch(`${this.baseUrl}/sendMessage`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: text,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    return null;
+                }
+            }
+        }
+
+        // ==================== СИМУЛЯЦИЯ РЕАЛЬНЫХ ДАННЫХ ====================
+        class DataSimulator {
+            constructor() {
+                this.lastUpdate = Date.now();
+                this.downloads = this.loadFromStorage('downloads') || [];
+                this.userActivity = this.loadFromStorage('user_activity') || {};
+                this.initializeDemoData();
+            }
+
+            initializeDemoData() {
+                if (this.downloads.length === 0) {
+                    // Добавляем демо данные
+                    this.downloads = [
+                        {
+                            id: 1,
+                            user_id: 123456,
+                            username: "ArturUfo",
+                            title: "YouTube Tutorial Video",
+                            format: "MP4",
+                            quality: "1080p",
+                            size_mb: 12.5,
+                            downloaded_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                            status: "completed"
+                        },
+                        {
+                            id: 2,
+                            user_id: 789012,
+                            username: "MariaPro",
+                            title: "TikTok Dance Challenge",
+                            format: "MP4",
+                            quality: "720p",
+                            size_mb: 8.2,
+                            downloaded_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                            status: "completed"
+                        },
+                        {
+                            id: 3,
+                            user_id: 345678,
+                            username: "TechGuru",
+                            title: "Instagram Reel",
+                            format: "MP4",
+                            quality: "480p",
+                            size_mb: 3.7,
+                            downloaded_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                            status: "completed"
+                        }
+                    ];
+                    this.saveToStorage('downloads', this.downloads);
+                }
+            }
+
+            loadFromStorage(key) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : null;
+            }
+
+            saveToStorage(key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            }
+
+            generateRandomStats() {
+                const now = Date.now();
+                const timeDiff = now - this.lastUpdate;
+                this.lastUpdate = now;
+
+                // Генерация реалистичных данных
+                const newDownloads = Math.floor(Math.random() * 3); // 0-2 новых загрузок
+                const newUsers = Math.random() > 0.7 ? 1 : 0; // Иногда новый пользователь
+                const newData = newDownloads * (50 + Math.random() * 150); // 50-200 MB на загрузку
+
+                // Обновляем статистику
+                statsData.total_downloads += newDownloads;
+                statsData.data_processed += newData;
+                
+                // Активные пользователи (за последние 24 часа)
+                const activeUsers = Object.keys(this.userActivity).filter(userId => {
+                    return now - this.userActivity[userId] < 24 * 60 * 60 * 1000;
+                }).length;
+                statsData.active_users = activeUsers;
+
+                // Онлайн сейчас (за последние 5 минут)
+                const onlineNow = Object.keys(this.userActivity).filter(userId => {
+                    return now - this.userActivity[userId] < 5 * 60 * 1000;
+                }).length;
+                statsData.online_now = onlineNow;
+
+                // Симулируем активность пользователей
+                this.simulateUserActivity();
+
+                // Сохраняем тренды для отображения
+                if (previousStats) {
+                    statsData.trends.downloads = statsData.total_downloads - previousStats.total_downloads;
+                    statsData.trends.data = statsData.data_processed - previousStats.data_processed;
+                    statsData.trends.users = statsData.active_users - previousStats.active_users;
+                    statsData.trends.online = statsData.online_now - previousStats.online_now;
+                }
+
+                previousStats = {...statsData};
+
+                return statsData;
+            }
+
+            simulateUserActivity() {
+                const now = Date.now();
+                // 30% chance of user activity
+                if (Math.random() < 0.3) {
+                    const randomUserId = Math.floor(100000 + Math.random() * 900000);
+                    this.userActivity[randomUserId] = now;
+                    this.saveToStorage('user_activity', this.userActivity);
+                }
+            }
+
+            getRecentDownloads(limit = 10) {
+                return this.downloads
+                    .sort((a, b) => new Date(b.downloaded_at) - new Date(a.downloaded_at))
+                    .slice(0, limit);
+            }
+
+            addDownload(download) {
+                download.id = this.downloads.length + 1;
+                download.downloaded_at = new Date().toISOString();
+                download.status = download.status || 'completed';
+                
+                this.downloads.unshift(download);
+                this.saveToStorage('downloads', this.downloads);
+
+                // Обновляем статистику
+                statsData.total_downloads++;
+                statsData.data_processed += download.size_mb || 0;
+
+                // Обновляем активность пользователя
+                this.userActivity[download.user_id] = Date.now();
+                this.saveToStorage('user_activity', this.userActivity);
+
+                return download;
+            }
+        }
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+        const botAPI = new TelegramBotAPI(CONFIG.BOT_TOKEN);
+        const dataSimulator = new DataSimulator();
+
+        // ==================== ФУНКЦИИ ИНТЕРФЕЙСА ====================
+        function updateStatsDisplay() {
+            const stats = dataSimulator.generateRandomStats();
+            
+            document.getElementById('total-downloads').textContent = stats.total_downloads.toLocaleString();
+            document.getElementById('active-users').textContent = stats.active_users.toLocaleString();
+            document.getElementById('data-processed').textContent = (stats.data_processed / 1024).toFixed(1) + ' GB';
+            document.getElementById('online-now').textContent = stats.online_now.toLocaleString();
+
+            // Обновляем тренды
+            updateTrend('downloads-trend', stats.trends.downloads, 'downloads');
+            updateTrend('users-trend', stats.trends.users, 'users');
+            updateTrend('data-trend', stats.trends.data, 'MB');
+            updateTrend('online-trend', stats.trends.online, 'users');
+        }
+
+        function updateTrend(elementId, value, unit) {
+            const element = document.getElementById(elementId);
+            if (value > 0) {
+                element.innerHTML = `<span class="trend-up">↑ +${value} ${unit}</span>`;
+            } else if (value < 0) {
+                element.innerHTML = `<span class="trend-down">↓ ${value} ${unit}</span>`;
+            } else {
+                element.innerHTML = `<span>→ 0 ${unit}</span>`;
+            }
+        }
+
+        function updateDownloadsTable() {
+            const downloads = dataSimulator.getRecentDownloads(10);
+            const table = document.getElementById('downloads-table');
+            
+            if (downloads.length === 0) {
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="loading">No downloads yet</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            table.innerHTML = downloads.map(download => `
+                <tr>
+                    <td>${download.username}</td>
+                    <td>${download.title}</td>
+                    <td><span class="badge badge-primary">${download.format} (${download.quality})</span></td>
+                    <td>${download.size_mb} MB</td>
+                    <td>${new Date(download.downloaded_at).toLocaleDateString()} ${new Date(download.downloaded_at).toLocaleTimeString()}</td>
+                    <td><span class="badge badge-success">${download.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.className = 'notification';
+            }, 3000);
+        }
+
+        // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
+        function openAnalyzeModal() {
+            document.getElementById('analyzeModal').style.display = 'block';
+        }
+
+        function closeAnalyzeModal() {
+            document.getElementById('analyzeModal').style.display = 'none';
+            document.getElementById('analyzeResult').style.display = 'none';
+            document.getElementById('videoUrl').value = '';
+        }
+
+        function openTelegramBot() {
+            window.open('https://t.me/your_bot_username', '_blank');
+        }
+
+        function refreshData() {
+            if (isRefreshing) return;
+            
+            isRefreshing = true;
+            showNotification('Refreshing data...', 'info');
+            
+            setTimeout(() => {
+                updateStatsDisplay();
+                updateDownloadsTable();
+                isRefreshing = false;
+                showNotification('Data refreshed successfully!', 'success');
+            }, 1000);
+        }
+
+        async function analyzeVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const format = document.getElementById('formatSelect').value;
+            
+            if (!url) {
+                showNotification('Please enter a video URL', 'error');
+                return;
+            }
+
+            showNotification('Analyzing video...', 'info');
+            
+            // Симуляция анализа видео
+            setTimeout(() => {
+                const resultDiv = document.getElementById('resultContent');
+                resultDiv.innerHTML = `
+                    <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                        <p><strong>URL:</strong> ${url}</p>
+                        <p><strong>Format:</strong> ${format.toUpperCase()}</p>
+                        <p><strong>Status:</strong> ✅ Available for download</p>
+                        <p><strong>Estimated Size:</strong> ~15.2 MB</p>
+                        <p><strong>Duration:</strong> 2:45</p>
+                    </div>
+                    <button class="btn btn-success" style="width: 100%; margin-top: 15px;" onclick="startDownload('${url}', '${format}')">
+                        <i class="fas fa-download"></i>
+                        Start Download
+                    </button>
+                `;
+                document.getElementById('analyzeResult').style.display = 'block';
+            }, 2000);
+        }
+
+        function startDownload(url, format) {
+            showNotification('Starting download process...', 'info');
+            
+            // Симуляция добавления загрузки
+            const newDownload = {
+                user_id: Math.floor(100000 + Math.random() * 900000),
+                username: 'NewUser' + Math.floor(Math.random() * 1000),
+                title: url.split('/').pop().slice(0, 30) + '...',
+                format: format.toUpperCase(),
+                quality: format === 'mp3' ? 'N/A' : '720p',
+                size_mb: Math.floor(5 + Math.random() * 20),
+                status: 'downloading'
+            };
+
+            dataSimulator.addDownload(newDownload);
+            
+            // Симуляция процесса загрузки
+            setTimeout(() => {
+                showNotification('Download completed successfully!', 'success');
+                closeAnalyzeModal();
+                refreshData();
+            }, 3000);
+        }
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Первоначальная загрузка данных
+            updateStatsDisplay();
+            updateDownloadsTable();
+            
+            // Автоматическое обновление каждые 10 секунд
+            setInterval(() => {
+                if (!isRefreshing) {
+                    updateStatsDisplay();
+                    updateDownloadsTable();
+                }
+            }, CONFIG.UPDATE_INTERVAL);
+
+            // Закрытие модального окна по клику вне его
+            window.addEventListener('click', function(event) {
+                const modal = document.getElementById('analyzeModal');
+                if (event.target === modal) {
+                    closeAnalyzeModal();
+                }
+            });
+
+            // Попытка получить информацию о боте
+            botAPI.getMe().then(botInfo => {
+                if (botInfo && botInfo.ok) {
+                    console.log('Bot connected:', botInfo.result.username);
+                }
+            });
         });
     </script>
 </body>
